@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:google="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerHorizontal="true"
+    android:layout_centerInParent="true"
+    android:gravity="center_vertical|center_horizontal"
+    android:orientation="vertical"
+    android:weightSum="1"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:divider="@drawable/divider"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:showDividers="middle"
+        android:weightSum="1">
+
+        <Spinner
+            android:id="@+id/destination_spinner"
+            style="@style/spinner_style"/>
+
+
+        <Spinner
+            android:id="@+id/time_spinner"
+            style="@style/spinner_style"/>
+
+        <Spinner
+            android:id="@+id/day_spinner"
+            style="@style/spinner_style"/>
+
+        <Button
+            android:id="@+id/standar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:onClick="onfind"
+            android:text="@string/find"
+            android:textSize="20dp"
+            android:textColor="@color/white"
+            android:background="@color/darkergrey"
+            />
+
+
+
+    </LinearLayout>
+</LinearLayout>
