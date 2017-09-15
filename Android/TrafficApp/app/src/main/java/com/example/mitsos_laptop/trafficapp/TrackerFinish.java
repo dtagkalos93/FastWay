@@ -23,7 +23,7 @@ public class TrackerFinish extends Activity {
         totalDistance = (TextView) findViewById(R.id.distance);
         totalTime = (TextView) findViewById(R.id.time);
         totalDistance.setText(trackData.getTotalDistance());
-        totalTime.setText(trackData.getTotalTime());
+        totalTime.setText(trackData.getTotalTime()+"");
     }
 
     public void finish(View view){

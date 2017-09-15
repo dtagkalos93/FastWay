@@ -57,6 +57,8 @@ public class FastDestination extends AppCompatActivity {
 
         String time=spinnertime.getSelectedItem().toString().split("\\(")[0];
         String dest=spinnerdestination.getSelectedItem().toString().split("\\.")[0];
+        if(day.equals("Days of the Week"))
+            day="Daily";
         NetConnection con = new NetConnection();
         con.getDirections(time,day,dest,this);
 

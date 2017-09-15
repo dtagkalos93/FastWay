@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 public class SelectMap extends AppCompatActivity {
 
@@ -15,6 +16,7 @@ public class SelectMap extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_map);
+
     }
 
     public void onStandar(View view){
@@ -23,10 +25,22 @@ public class SelectMap extends AppCompatActivity {
     }
 
     public void onFast(View view){
+        disabeButtons();
         NetConnection con = new NetConnection();
         con.findDestination(this);
 
 
     }
+
+    private void disabeButtons() {
+        ((Button) findViewById(R.id.fast)).setEnabled(false);
+        ((Button) findViewById(R.id.standar)).setEnabled(false);
+    }
+
+    public void enableButtons() {
+        ((Button) findViewById(R.id.fast)).setEnabled(true);
+        ((Button) findViewById(R.id.standar)).setEnabled(true);
+    }
+
 
 }

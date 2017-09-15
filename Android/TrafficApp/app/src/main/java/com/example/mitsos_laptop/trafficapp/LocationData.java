@@ -17,8 +17,8 @@ public class LocationData {
         editor = pref.edit();
     }
 
-    public void tracking(String track){
-        editor.putString("track",track);
+    public void tracking(String trackPoint){
+        editor.putString("track",trackPoint);
         editor.commit();
     }
 
@@ -28,11 +28,6 @@ public class LocationData {
         editor.commit();
     }
 
-    public void distCord(String init,String stop){
-        editor.putString("init",init);
-        editor.putString("stop",stop);
-        editor.commit();
-    }
 
     public void id(String id){
         editor.putString("id",id);
@@ -44,9 +39,9 @@ public class LocationData {
         editor.commit();
     }
 
-    public void total(String totalDis,String totalTime){
+    public void total(String totalDis,int totalTime){
         editor.putString("totalDistance",totalDis);
-        editor.putString("totalTime",totalTime);
+        editor.putInt("totalTime",totalTime);
         editor.commit();
 
     }
@@ -55,8 +50,8 @@ public class LocationData {
         return pref.getString("totalDistance","");
     }
 
-    public String getTotalTime(){
-        return pref.getString("totalTime","");
+    public int getTotalTime(){
+        return pref.getInt("totalTime",0);
     }
 
 
@@ -76,14 +71,7 @@ public class LocationData {
         return pref.getString("end","");
     }
 
-    public String init(){
-        return pref.getString("init","");
-    }
 
-    public String stop(){
-        return pref.getString("stop","");
-    }
-
-    public String track() {return  pref.getString("track","");}
+    public String trackPoint() {return  pref.getString("track","");}
 
 }

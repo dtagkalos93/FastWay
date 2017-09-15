@@ -109,8 +109,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void onCar(View V){
-        Intent intent = new Intent(MainActivity.this, CarAction.class);
+    public void onNavigation(View view){
+        Intent intent = new Intent(MainActivity.this, SelectMap.class);
+        startActivity(intent);
+    }
+
+    public void onLocation(View view){
+        Intent intent = new Intent(MainActivity.this, Tracker.class);
         startActivity(intent);
     }
 

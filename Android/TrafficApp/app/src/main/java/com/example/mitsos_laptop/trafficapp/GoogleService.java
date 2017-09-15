@@ -34,7 +34,7 @@ public class GoogleService extends Service implements LocationListener {
     Location location;
     private Handler mHandler = new Handler();
     private Timer mTimer = null;
-    long notify_interval = 60000;
+    long notify_interval = 30000;
     public static String str_receiver = "com.example.mitsos_laptop.trafficapp.receiver";
     Intent intent;
     private boolean firstTime = false;
@@ -167,10 +167,9 @@ public class GoogleService extends Service implements LocationListener {
     }
 
     private void newLocation(Location location) {
-        /*Log.e("latitude",location.getLatitude()+"");
-        Log.e("longitude",location.getLongitude()+"");*/
+
         tEnd = System.currentTimeMillis();
-        //Log.e("time",(tEnd-tStart)+"");
+
 
         latitude = location.getLatitude();
         longitude = location.getLongitude();
@@ -187,13 +186,45 @@ public class GoogleService extends Service implements LocationListener {
         Location locationEnd = new Location("endPoint");
         locationEnd.setLatitude(latitudeEnd);
         locationEnd.setLongitude(longitudeEnd);
+
 //        con.getDistanceOnRoad(Double.parseDouble(new DecimalFormat("##.####").format(latitude)),Double.parseDouble(new DecimalFormat("##.####").format(longitude)),Double.parseDouble(new DecimalFormat("##.####").format(latitudeEnd)),Double.parseDouble(new DecimalFormat("##.####").format(longitudeEnd)),this);
         con.getDistanceOnRoad(longitude,latitude,latitudeEnd,longitudeEnd,this);
         Log.d("TEST","Current Location: " + location.toString() + "End Location:" + locationEnd.toString() );
         String dis=trackData.getDistance();
-        Log.d("Distance:",dis);
+        Log.d("Distance:",Double.parseDouble(dis)+"");
 
-        if (firstTime) {
+
+        if (trackData.end().equals(stopPoint) || Double.parseDouble(dis)<=0.5 ) {
+            Log.d("latitude", location.getLatitude() + "");
+            Log.d("longitude", location.getLongitude() + "");
+            Log.d("start", TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "");
+            con.sendLoc(trackData.trackPoint(), stopPoint, TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "", this);
+            /*totalTime=Integer.parseInt(trackData.getTotalTime())+(tEnd - tStart);
+            totalDistance=Double.parseDouble(trackData.getDistance())+Double.parseDouble(trackData.getDistance());
+            trackData.total(totalDistance+"",TimeUnit.MILLISECONDS.toMinutes(totalTime)+"");*/
+            mTimer.cancel();
+            Intent dialogIntent = new Intent(this, TrackerFinish.class);
+            dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
+            startActivity(dialogIntent);
+
+        } else {
+            if (tEnd - tStart > 120000) {
+                Log.d("MIDPOITN",stopPoint+"point : "+trackData.trackPoint() );
+                String startpoint=trackData.trackPoint();
+                trackData.tracking(stopPoint);
+                tStart = System.currentTimeMillis();
+                con.sendLoc(trackData.trackPoint(), stopPoint, TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "", this);
+                Log.d("after","point : "+trackData.trackPoint() );
+                //totalTime=Integer.parseInt(trackData.getTotalTime())+(tEnd - tStart);
+                //totalDistance=Double.parseDouble(trackData.getDistance())+Double.parseDouble(trackData.getDistance());
+                //trackData.total(totalDistance+"",TimeUnit.MILLISECONDS.toMinutes(totalTime)+"");
+
+
+            }
+        }
+
+
+/*        if (firstTime) {
 
             if (trackData.end().equals(stopPoint) ||  Double.parseDouble(dis)<0.5 ) {
                 Log.d("latitude", location.getLatitude() + "");
@@ -210,9 +241,7 @@ public class GoogleService extends Service implements LocationListener {
 
             } else {
                 if (tEnd - tStart > 120000) {
-                    Log.d("latitude", location.getLatitude() + "");
-                    Log.d("longitude", location.getLongitude() + "");
-                    Log.d("start", TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "");
+
                     trackData.distCord(trackData.stop(), stopPoint);
                     Log.d("google", trackData.init());
                     con.sendLoc(trackData.init(), trackData.stop(), TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "", this);
@@ -226,11 +255,10 @@ public class GoogleService extends Service implements LocationListener {
 
         } else {
             if (tEnd - tStart > 120000) {
-                Log.d("latitude", location.getLatitude() + "");
-                Log.d("longitude", location.getLongitude() + "");
+
                 Log.d("start", TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "");
                 trackData.distCord(trackData.begin(), stopPoint);
-                Log.d("google", trackData.init());
+                Log.d("google", trackData.begin());
                 con.sendLoc(trackData.init(), trackData.stop(), TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "", this);
                 totalTime=Integer.parseInt(trackData.getTotalTime())+(tEnd - tStart);
                 totalDistance=Double.parseDouble(trackData.getDistance())+Double.parseDouble(trackData.getDistance());
@@ -240,7 +268,7 @@ public class GoogleService extends Service implements LocationListener {
             }
 
 
-        }
+        }*/
         fn_update(location);
 
     }

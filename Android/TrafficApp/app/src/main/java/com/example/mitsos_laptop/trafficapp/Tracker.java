@@ -234,7 +234,8 @@ public class Tracker extends AppCompatActivity implements GoogleApiClient.OnConn
                 String startPoint=latitude+","+longitude;
                 Log.d("Tracker",startPoint);
                 data.initCord(startPoint,destination);
-                data.tracking("false");
+                data.tracking(startPoint);
+                data.total(0.0+"",0);
                 Log.d("Destintaion",destination);
                 Log.d("Corr", "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude));
 

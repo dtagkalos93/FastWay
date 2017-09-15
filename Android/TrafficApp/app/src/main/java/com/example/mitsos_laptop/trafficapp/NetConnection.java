@@ -1,8 +1,11 @@
 package com.example.mitsos_laptop.trafficapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -44,7 +47,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class NetConnection {
     //protected static final String serverIP = "http://192.168.1.3:8080/TrafficServer/";
     //protected static final String serverIP = "http://10.0.2.2:8080/TrafficServer/";
-    protected static final String serverIP = "http://2.86.79.216:60000/TrafficServer/";
+    protected static final String serverIP = "http://2.86.70.1:60000/TrafficServer/";
 
     private LocationData data;
 
@@ -168,8 +171,16 @@ public class NetConnection {
 
                     public void onResponse(JSONObject response) {
                         try {
-                            String result =response.getString("login");
-                            Log.d("result", result);
+                            Log.d("test","I AM HEREEE");
+                            Log.d("sendLoc",response.toString());
+                            String distance =response.getString("distance");
+                            String time =response.getString("time");
+                            double dis=Double.parseDouble(distance);
+                            double disPref=Double.parseDouble(data.getTotalDistance());
+                            int timeInt=Integer.parseInt(time);
+                            Log.d("Response", "distance:"+distance+ "time:"+ time);
+                            data.total(dis+disPref+"",timeInt+data.getTotalTime());
+                            Log.d("DATA", "distance:"+data.getTotalDistance()+ "time:"+ data.getTotalTime());
 
 
                         } catch (JSONException e) {
@@ -249,8 +260,9 @@ public class NetConnection {
 
                     public void onResponse(JSONObject response) {
                         try {
+                            Log.d("Send mesage","HEREEEEE");
                             String result =response.getString("distance");
-                            Log.d("result", result);
+                            Log.d("result", response.toString());
 
                             data.distance(result);
 
@@ -326,22 +338,48 @@ public class NetConnection {
     public void getDirections(String time, String day, String id, final Context ctx) {
 
 
-        //String url=serverIP+"FastestRoute?time="+time+"&day="+day+"&id="+id;
-        String url=serverIP+"FastestRoute?time=Afrenoon&day="+day+"&id="+id;
+        String url=serverIP+"FastestRoute?time="+time+"&day="+day+"&id="+id;
+        //String url=serverIP+"FastestRoute?time=Afrenoon&day="+day+"&id="+id;
         Log.d("Send mesage",url);
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
                     public void onResponse(JSONObject response) {
+                        if(response.has("error")){
+                            AlertDialog.Builder builder;
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                builder = new AlertDialog.Builder(ctx, android.R.style.Theme_Material_Dialog_Alert);
+                            } else {
+                                builder = new AlertDialog.Builder(ctx);
+                            }
+                            builder.setTitle("Route Error")
+                                    .setMessage("No Data found in Database for these route.Do you want to select new data for your route?")
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // continue with delete
+                                        }
+                                    })
+                                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // do nothing
+                                            Intent intent = new Intent(((Activity)ctx),MainActivity.class);
+                                            ((Activity)ctx).finish();
+                                            ctx.startActivity(intent);
+                                        }
+                                    })
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .show();
+                        }
+                        else{
+                            destination=new Destinations();
+                            destination.Directions(response);
 
+                            Intent intent = new Intent(((Activity)ctx),FastestWayMap.class);
+                            ((Activity)ctx).finish();
+                            ctx.startActivity(intent);
+                        }
 
-                        destination=new Destinations();
-                        destination.Directions(response);
-
-                        Intent intent = new Intent(((Activity)ctx),FastestWayMap.class);
-                        ((Activity)ctx).finish();
-                        ctx.startActivity(intent);
 
                     }
                 },
