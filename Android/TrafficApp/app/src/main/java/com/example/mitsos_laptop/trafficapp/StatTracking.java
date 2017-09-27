@@ -23,6 +23,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -32,8 +34,10 @@ public class StatTracking extends AppCompatActivity {
 
     private static final int REQUEST_PERMISSIONS = 100;
     boolean boolean_permission;
+    private boolean firstTimeflag=true;
 
     Double latitude,longitude;
+    private LocationData trackData;
     Geocoder geocoder;
 
 
@@ -42,11 +46,12 @@ public class StatTracking extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stat_tracking);
-        String startPoint=getIntent().getStringExtra("startPoint");
-        String destination=getIntent().getStringExtra("destination");
+        trackData=new LocationData(this);
+        /*String startPoint=getIntent().getStringExtra("startPoint");
+        String destination=getIntent().getStringExtra("destination");*/
         Intent intent = new Intent(getApplicationContext(), GoogleService.class);
-        intent.putExtra("startPoint",startPoint);
-        intent.putExtra("destination",destination);
+        /*intent.putExtra("startPoint",startPoint);
+        intent.putExtra("destination",destination);*/
         startService(intent);
         fn_permission();
 
@@ -97,11 +102,6 @@ public class StatTracking extends AppCompatActivity {
 
             latitude = Double.valueOf(intent.getStringExtra("latutide"));
             longitude = Double.valueOf(intent.getStringExtra("longitude"));
-
-            Log.d(TAG,latitude.toString()+","+longitude);
-
-
-
 
         }
     };

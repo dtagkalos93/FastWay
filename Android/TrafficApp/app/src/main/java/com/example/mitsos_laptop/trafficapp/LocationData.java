@@ -17,6 +17,12 @@ public class LocationData {
         editor = pref.edit();
     }
 
+
+    public void LocationDataRemove(){
+        editor.clear();
+        editor.commit();
+    }
+
     public void tracking(String trackPoint){
         editor.putString("track",trackPoint);
         editor.commit();

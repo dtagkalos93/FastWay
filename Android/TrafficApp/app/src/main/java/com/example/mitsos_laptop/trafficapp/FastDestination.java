@@ -8,6 +8,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 public class FastDestination extends AppCompatActivity {
@@ -16,6 +18,7 @@ public class FastDestination extends AppCompatActivity {
     private Spinner spinnertime;
     private Spinner spinnerday;
     private Spinner spinnerdestination;
+    private NetConnection con;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,16 +56,34 @@ public class FastDestination extends AppCompatActivity {
     }
 
     public void onfind(View view) {
+        con = new NetConnection();
+        con.isNetworkAvailable(this);
+        disabeButtons();
         String day=spinnerday.getSelectedItem().toString().split("\\(")[0];
 
         String time=spinnertime.getSelectedItem().toString().split("\\(")[0];
         String dest=spinnerdestination.getSelectedItem().toString().split("\\.")[0];
         if(day.equals("Days of the Week"))
             day="Daily";
-        NetConnection con = new NetConnection();
         con.getDirections(time,day,dest,this);
 
 
+    }
+
+    private void disabeButtons() {
+        ((Spinner) findViewById(R.id.destination_spinner)).setEnabled(false);
+        ((Spinner) findViewById(R.id.day_spinner)).setEnabled(false);
+        ((Spinner) findViewById(R.id.time_spinner)).setEnabled(false);
+        ((Button) findViewById(R.id.find)).setEnabled(false);
+        ((ProgressBar)findViewById(R.id.progress_bar)).setVisibility(View.VISIBLE);
+    }
+
+    public void enableButtons() {
+        ((Spinner) findViewById(R.id.destination_spinner)).setEnabled(true);
+        ((Spinner) findViewById(R.id.day_spinner)).setEnabled(true);
+        ((Spinner) findViewById(R.id.time_spinner)).setEnabled(true);
+        ((Button) findViewById(R.id.find)).setEnabled(true);
+        ((ProgressBar)findViewById(R.id.progress_bar)).setVisibility(View.VISIBLE);
     }
 
 }

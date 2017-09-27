@@ -23,6 +23,15 @@
         android:showDividers="middle"
         android:weightSum="1">
 
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"/>
+
+
         <Spinner
             android:id="@+id/destination_spinner"
             style="@style/spinner_style"/>
@@ -37,7 +46,7 @@
             style="@style/spinner_style"/>
 
         <Button
-            android:id="@+id/standar"
+            android:id="@+id/find"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

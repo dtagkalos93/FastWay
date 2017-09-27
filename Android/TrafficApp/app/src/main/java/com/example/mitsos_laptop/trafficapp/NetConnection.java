@@ -5,6 +5,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
@@ -47,7 +50,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class NetConnection {
     //protected static final String serverIP = "http://192.168.1.3:8080/TrafficServer/";
     //protected static final String serverIP = "http://10.0.2.2:8080/TrafficServer/";
-    protected static final String serverIP = "http://2.86.70.1:60000/TrafficServer/";
+    protected static final String serverIP = "http://2.86.105.185:60000/TrafficServer/";
 
     private LocationData data;
 
@@ -70,7 +73,6 @@ public class NetConnection {
                     public void onResponse(JSONObject response) {
                         try {
                             String result =response.getString("login");
-                            Log.d("result", result);
 
 
                             if(result.equals("true")){
@@ -124,7 +126,7 @@ public class NetConnection {
                     public void onResponse(JSONObject response) {
                         try {
                             String result =response.getString("register");
-                            Log.d("result", result);
+
                             if(result.equals("true")){
                                 User usr=new User(ctx);
                                 usr.logIn(username);
@@ -160,9 +162,8 @@ public class NetConnection {
 
     }
 
-    public void sendLoc(final String startPoint, String endPoint,String ourtime, final Context ctx){
+    public void sendLoc(final String startPoint, final String endPoint, String ourtime, final Context ctx){
         data=new LocationData(ctx);
-        Log.d("Send Location:",startPoint+" endPoint:" + endPoint);
         String url=serverIP+"car?startpos="+startPoint+"&finalpos="+endPoint+"&ourtime="+ourtime+"&id="+data.id() ;
         Log.d("Send mesage",url);
 
@@ -171,18 +172,13 @@ public class NetConnection {
 
                     public void onResponse(JSONObject response) {
                         try {
-                            Log.d("test","I AM HEREEE");
-                            Log.d("sendLoc",response.toString());
+
                             String distance =response.getString("distance");
                             String time =response.getString("time");
                             double dis=Double.parseDouble(distance);
                             double disPref=Double.parseDouble(data.getTotalDistance());
                             int timeInt=Integer.parseInt(time);
-                            Log.d("Response", "distance:"+distance+ "time:"+ time);
                             data.total(dis+disPref+"",timeInt+data.getTotalTime());
-                            Log.d("DATA", "distance:"+data.getTotalDistance()+ "time:"+ data.getTotalTime());
-
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -213,7 +209,6 @@ public class NetConnection {
                     public void onResponse(JSONObject response) {
                         try {
                             String result =response.getString("Destination");
-                            Log.d("result", result);
 
 
 
@@ -250,7 +245,7 @@ public class NetConnection {
                                      double prelatitute, double prelongitude,Context ctx) {
 
         data=new LocationData(ctx);
-        String startPoint=longitude+","+latitude;
+        String startPoint=latitude+","+longitude;
         String endpoint=prelatitute+","+prelongitude;
         String url=serverIP+"distance?startpos="+startPoint+"&finalpos="+endpoint ;
         Log.d("Send mesage",url);
@@ -260,17 +255,9 @@ public class NetConnection {
 
                     public void onResponse(JSONObject response) {
                         try {
-                            Log.d("Send mesage","HEREEEEE");
                             String result =response.getString("distance");
-                            Log.d("result", response.toString());
 
                             data.distance(result);
-
-
-
-
-
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -300,13 +287,11 @@ public class NetConnection {
                     public void onResponse(JSONObject response) {
                         for(int i=1;i<=response.length();i++){
                             try {
-                                Log.d(i+"",response.get(i+"").toString());
                                 JSONArray dest1=response.getJSONArray(i+"");
                                 JSONObject dest2=dest1.getJSONObject(0);
                                 fromList.add(dest2.getString("from"));
                                 toList.add(dest2.getString("to"));
                                 dest.add(i+". From: "+ fromList.get(i-1)+ "\nTo: "+ toList.get(i-1));
-                                Log.d("FindDestination",dest.get(i-1));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -326,7 +311,24 @@ public class NetConnection {
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                Log.e("Volley", "Error");
+                                AlertDialog.Builder builder;
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    builder = new AlertDialog.Builder(ctx, android.R.style.Theme_Material_Dialog_Alert);
+                                } else {
+                                    builder = new AlertDialog.Builder(ctx);
+                                }
+                                builder.setTitle("Server Error")
+                                        .setMessage("Something goes wrong with the Server.Try Again.")
+                                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // continue with delete
+                                                ((SelectMap)ctx).enableButtons();
+
+                                            }
+                                        })
+
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        .show();
                             }
                         });
 
@@ -386,6 +388,25 @@ public class NetConnection {
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
+                                AlertDialog.Builder builder;
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    builder = new AlertDialog.Builder(ctx, android.R.style.Theme_Material_Dialog_Alert);
+                                } else {
+                                    builder = new AlertDialog.Builder(ctx);
+                                }
+                                builder.setTitle("Server Error")
+                                        .setMessage("Something goes wrong with the Server.Try Again.")
+                                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // continue with delete
+                                                ((FastDestination)ctx).enableButtons();
+
+                                            }
+                                        })
+
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        .show();
+
                                 Log.e("Volley", "Error");
                             }
                         });
@@ -393,6 +414,34 @@ public class NetConnection {
         RequestQueue rQueue = Volley.newRequestQueue(ctx);
         rQueue.add(jsObjRequest);
     }
+
+
+    public void isNetworkAvailable(final Context ctx) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) ctx.getSystemService(ctx.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if(activeNetworkInfo==null || !(activeNetworkInfo.isConnected()) ) {
+
+            new AlertDialog.Builder(ctx)
+                    .setTitle(ctx.getString(R.string.connection))
+                    .setMessage(ctx.getString(R.string.noconnection))
+                    .setPositiveButton(ctx.getString(R.string.retry), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            isNetworkAvailable(ctx);
+                        }
+                    })
+                    .setNegativeButton(ctx.getString(R.string.exit), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            System.exit(1);
+                        }
+                    })
+                    .setCancelable(false)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+
+    }
+
 
 
 

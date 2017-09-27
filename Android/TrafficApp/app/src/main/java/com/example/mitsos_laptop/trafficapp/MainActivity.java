@@ -27,12 +27,15 @@ public class MainActivity extends AppCompatActivity {
     private Button login;
     private Button signup;
     private ProgressBar bar;
+    private NetConnection con;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         user=new User(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        con = new NetConnection();
+        con.isNetworkAvailable(this);
 
         if(user.loggedIn(this)){
             findViewById(R.id.loginlayout).setVisibility(View.VISIBLE);
@@ -92,11 +95,11 @@ public class MainActivity extends AppCompatActivity {
             errormessage.setVisibility(View.VISIBLE);
         }
         else{
-            NetConnection com = new NetConnection();
+            con = new NetConnection();
             disablleButtons();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-            com.existUser(username.getText().toString(),password.getText().toString(),this);
+            con.existUser(username.getText().toString(),password.getText().toString(),this);
         }
 
 
@@ -115,6 +118,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onLocation(View view){
+        con = new NetConnection();
+        con.isNetworkAvailable(this);
         Intent intent = new Intent(MainActivity.this, Tracker.class);
         startActivity(intent);
     }

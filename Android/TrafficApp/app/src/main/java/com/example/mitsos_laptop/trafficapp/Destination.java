@@ -46,6 +46,8 @@ public class Destination extends AppCompatActivity implements GoogleApiClient.On
 
     private LocationData data;
 
+    private NetConnection con;
+
     private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
             new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
 
@@ -245,9 +247,8 @@ public class Destination extends AppCompatActivity implements GoogleApiClient.On
 
 
     public void direction(View view){
-        Log.d(TAG, "Here i am " + toStr);
-        Log.d(TAG, "Here i am 2 " + fromStr);
-
+        con = new NetConnection();
+        con.isNetworkAvailable(this);
         if(fromStr!=null && toStr!=null) {
             String[] fromPart=fromStr.split("\\(");
             fromPart=fromPart[1].split("\\)");

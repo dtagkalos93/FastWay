@@ -212,9 +212,10 @@ public class Tracker extends AppCompatActivity implements GoogleApiClient.OnConn
     }
 
     public void start(View view) throws ParseException {
+        con = new NetConnection();
+        con.isNetworkAvailable(this);
         gps = new GPSTracker(Tracker.this);
-
-        Log.d("Here I AMAAAA",mAutocompleteView.getText().toString());
+        data.LocationDataRemove();
 
         if(destination!=null) {
             if (gps.canGetLocation()) {
@@ -230,7 +231,6 @@ public class Tracker extends AppCompatActivity implements GoogleApiClient.OnConn
                 DecimalFormat format = new DecimalFormat("#0.######", symbols);
                 latitude=Double.valueOf(format.format(latitude));
                 longitude=Double.valueOf(format.format(longitude));
-                //String startPoint=new DecimalFormat("#0.000000").format(latitude)+","+ new DecimalFormat("#0.000000").format(longitude);
                 String startPoint=latitude+","+longitude;
                 Log.d("Tracker",startPoint);
                 data.initCord(startPoint,destination);

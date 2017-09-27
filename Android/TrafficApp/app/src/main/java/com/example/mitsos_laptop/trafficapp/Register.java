@@ -18,6 +18,7 @@ public class Register extends AppCompatActivity {
     private TextView errormessage;
     private Button signup;
     private ProgressBar bar;
+    private NetConnection con;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +26,8 @@ public class Register extends AppCompatActivity {
     }
 
     public void register(View v) {
+        con = new NetConnection();
+        con.isNetworkAvailable(this);
         EditText username = (EditText) findViewById(R.id.username);
         EditText password = (EditText) findViewById(R.id.password);
         errormessage = (TextView) findViewById(R.id.message);

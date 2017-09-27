@@ -41,10 +41,10 @@ public class GoogleService extends Service implements LocationListener {
     private long tStart;
     private long tEnd;
     private NetConnection con;
-    private String startPoint;
+    private String midpoint;
     private String destination;
     private double totalDistance = 0.0;
-    private long totalTime=0;
+    private long totalTime = 0;
 
     private LocationData trackData;
 
@@ -115,7 +115,7 @@ public class GoogleService extends Service implements LocationListener {
                     // for ActivityCompat#requestPermissions for more details.
                     return;
                 }
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500, 0, this);
                 if (locationManager != null) {
                     location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     if (location != null) {
@@ -129,7 +129,7 @@ public class GoogleService extends Service implements LocationListener {
 
             if (isGPSEnable) {
                 location = null;
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 10, this);
                 if (locationManager != null) {
                     location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     if (location != null) {
@@ -159,7 +159,7 @@ public class GoogleService extends Service implements LocationListener {
         }
     }
 
-    private void fn_update(Location location) {
+    public void fn_update(Location location) {
 
         intent.putExtra("latutide", location.getLatitude() + "");
         intent.putExtra("longitude", location.getLongitude() + "");
@@ -167,112 +167,47 @@ public class GoogleService extends Service implements LocationListener {
     }
 
     private void newLocation(Location location) {
-
         tEnd = System.currentTimeMillis();
-
-
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
         symbols.setDecimalSeparator('.');
-        DecimalFormat format = new DecimalFormat("#0.######", symbols);
-        latitude=Double.valueOf(format.format(latitude));
-        longitude=Double.valueOf(format.format(longitude));
+        /*DecimalFormat format = new DecimalFormat("#0.######", symbols);
+        latitude = Double.valueOf(format.format(latitude));
+        longitude = Double.valueOf(format.format(longitude));*/
+        String stopPoint = latitude + "," + longitude;
+        Log.d("StopPoint","StopPoint "+stopPoint+ "TrackPoint"+ trackData.trackPoint());
         String[] from = trackData.end().split(",");
         double latitudeEnd = Double.parseDouble(from[0]);
         double longitudeEnd = Double.parseDouble(from[1]);
-        //String stopPoint = Double.parseDouble(new DecimalFormat("##.####").format(longitude)) + "," + Double.parseDouble(new DecimalFormat("##.####").format(latitude));
-        String stopPoint=latitude+","+longitude;
         Location locationEnd = new Location("endPoint");
         locationEnd.setLatitude(latitudeEnd);
         locationEnd.setLongitude(longitudeEnd);
-
-//        con.getDistanceOnRoad(Double.parseDouble(new DecimalFormat("##.####").format(latitude)),Double.parseDouble(new DecimalFormat("##.####").format(longitude)),Double.parseDouble(new DecimalFormat("##.####").format(latitudeEnd)),Double.parseDouble(new DecimalFormat("##.####").format(longitudeEnd)),this);
-        con.getDistanceOnRoad(longitude,latitude,latitudeEnd,longitudeEnd,this);
-        Log.d("TEST","Current Location: " + location.toString() + "End Location:" + locationEnd.toString() );
-        String dis=trackData.getDistance();
-        Log.d("Distance:",Double.parseDouble(dis)+"");
-
-
-        if (trackData.end().equals(stopPoint) || Double.parseDouble(dis)<=0.5 ) {
-            Log.d("latitude", location.getLatitude() + "");
-            Log.d("longitude", location.getLongitude() + "");
-            Log.d("start", TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "");
+        con.getDistanceOnRoad(latitude, longitude, latitudeEnd, longitudeEnd, this);
+        String dis = trackData.getDistance();
+        if (Double.parseDouble(dis) <= 0.1) {
             con.sendLoc(trackData.trackPoint(), stopPoint, TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "", this);
-            /*totalTime=Integer.parseInt(trackData.getTotalTime())+(tEnd - tStart);
-            totalDistance=Double.parseDouble(trackData.getDistance())+Double.parseDouble(trackData.getDistance());
-            trackData.total(totalDistance+"",TimeUnit.MILLISECONDS.toMinutes(totalTime)+"");*/
             mTimer.cancel();
             Intent dialogIntent = new Intent(this, TrackerFinish.class);
-            dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
+            dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(dialogIntent);
 
         } else {
             if (tEnd - tStart > 120000) {
-                Log.d("MIDPOITN",stopPoint+"point : "+trackData.trackPoint() );
-                String startpoint=trackData.trackPoint();
+                Log.d("MIDPOINT", "PointA" + trackData.trackPoint() + "PointB" + stopPoint);
+                midpoint=trackData.trackPoint();
                 trackData.tracking(stopPoint);
+                con.sendLoc(midpoint, stopPoint, TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "", this);
                 tStart = System.currentTimeMillis();
-                con.sendLoc(trackData.trackPoint(), stopPoint, TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "", this);
-                Log.d("after","point : "+trackData.trackPoint() );
-                //totalTime=Integer.parseInt(trackData.getTotalTime())+(tEnd - tStart);
-                //totalDistance=Double.parseDouble(trackData.getDistance())+Double.parseDouble(trackData.getDistance());
-                //trackData.total(totalDistance+"",TimeUnit.MILLISECONDS.toMinutes(totalTime)+"");
 
 
             }
+
+
         }
 
 
-/*        if (firstTime) {
-
-            if (trackData.end().equals(stopPoint) ||  Double.parseDouble(dis)<0.5 ) {
-                Log.d("latitude", location.getLatitude() + "");
-                Log.d("longitude", location.getLongitude() + "");
-                Log.d("start", TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "");
-                con.sendLoc(trackData.stop(), stopPoint, TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "", this);
-                totalTime=Integer.parseInt(trackData.getTotalTime())+(tEnd - tStart);
-                totalDistance=Double.parseDouble(trackData.getDistance())+Double.parseDouble(trackData.getDistance());
-                trackData.total(totalDistance+"",TimeUnit.MILLISECONDS.toMinutes(totalTime)+"");
-                mTimer.cancel();
-                Intent dialogIntent = new Intent(this, TrackerFinish.class);
-                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
-                startActivity(dialogIntent);
-
-            } else {
-                if (tEnd - tStart > 120000) {
-
-                    trackData.distCord(trackData.stop(), stopPoint);
-                    Log.d("google", trackData.init());
-                    con.sendLoc(trackData.init(), trackData.stop(), TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "", this);
-                    totalTime=Integer.parseInt(trackData.getTotalTime())+(tEnd - tStart);
-                    totalDistance=Double.parseDouble(trackData.getDistance())+Double.parseDouble(trackData.getDistance());
-                    trackData.total(totalDistance+"",TimeUnit.MILLISECONDS.toMinutes(totalTime)+"");
-                    tStart = System.currentTimeMillis();
-
-                }
-            }
-
-        } else {
-            if (tEnd - tStart > 120000) {
-
-                Log.d("start", TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "");
-                trackData.distCord(trackData.begin(), stopPoint);
-                Log.d("google", trackData.begin());
-                con.sendLoc(trackData.init(), trackData.stop(), TimeUnit.MILLISECONDS.toMinutes(tEnd - tStart) + "", this);
-                totalTime=Integer.parseInt(trackData.getTotalTime())+(tEnd - tStart);
-                totalDistance=Double.parseDouble(trackData.getDistance())+Double.parseDouble(trackData.getDistance());
-                tStart = System.currentTimeMillis();
-                trackData.total(totalDistance+"",TimeUnit.MILLISECONDS.toMinutes(totalTime)+"");
-                firstTime=true;
-            }
-
-
-        }*/
-        fn_update(location);
-
     }
-
 
 
 }

@@ -75,15 +75,15 @@
             android:label="@string/title_activity_map">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.mitsos_laptop.trafficapp.CarAction" />
+                android:value="com.example.mitsos_laptop.trafficapp.Destination" />
         </activity>
         <activity
             android:name=".Destination"
             android:label="@string/title_activity_destination"
-            android:parentActivityName=".CarAction">
+            android:parentActivityName=".SelectMap">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.mitsos_laptop.trafficapp.CarAction" />
+                android:value="com.example.mitsos_laptop.trafficapp.SelectMap" />
         </activity>
         <activity android:name=".TrackerFinish" />
         <activity
@@ -97,17 +97,17 @@
         <activity
             android:name=".FastDestination"
             android:label="@string/title_activity_fast_destination"
-            android:parentActivityName=".CarAction">
+            android:parentActivityName=".SelectMap">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.mitsos_laptop.trafficapp.CarAction" />
+                android:value="com.example.mitsos_laptop.trafficapp.SelectMap" />
         </activity>
         <activity
             android:name=".FastestWayMap"
             android:label="@string/title_activity_fastest_way_map">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.mitsos_laptop.trafficapp.CarAction" />
+                android:value="com.example.mitsos_laptop.trafficapp.SelectMap" />
         </activity>
     </application>
 
